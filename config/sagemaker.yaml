@@ -21,8 +21,8 @@ profile: default
 py_version: py310
 pytorch_version: 2.0.0
 region: us-east-1
-transformers_version: 4.28.1
-sagemaker_metrics_file: config/accelerate/sagemaker_metrics_definition.tsv
+transformers_version: 4.36.0
+sagemaker_metrics_file: config/sagemaker_metrics_definition.tsv
 use_cpu: false
 # additional_args:
 #   use_spot_instances: True

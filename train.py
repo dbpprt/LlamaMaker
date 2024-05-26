@@ -6,10 +6,10 @@ from datasets import load_dataset, set_caching_enabled
 from omegaconf import OmegaConf
 from peft import AutoPeftModelForCausalLM, LoraConfig, prepare_model_for_kbit_training
 from transformers import (
+    AutoModelForCausalLM,
+    AutoTokenizer,
     BitsAndBytesConfig,
     HfArgumentParser,
-    LlamaForCausalLM,
-    LlamaTokenizer,
     TrainingArguments,
 )
 from transformers.utils import is_flash_attn_2_available
@@ -74,7 +74,7 @@ def main():
         print("Using cpu, CUDA is not available")
         device_map = {"": "cpu"}
 
-    model = LlamaForCausalLM.from_pretrained(
+    model = AutoModelForCausalLM.from_pretrained(
         pretrained_model_name_or_path=script_args.model_id,
         device_map=device_map,
         trust_remote_code=True,
@@ -100,11 +100,11 @@ def main():
     trainer_args = {**trainer_args, "peft_config": lora_config}
 
     # WIP: is this correct?
-    tokenizer = LlamaTokenizer.from_pretrained(
+    tokenizer = AutoTokenizer.from_pretrained(
         script_args.model_id,
-        # padding_side="right",
-        # add_eos_token=True,
-        # add_bos_token=True,
+        padding_side="right",
+        add_eos_token=True,
+        add_bos_token=True,
     )
 
     if re.search("tinyllama", script_args.model_id, re.IGNORECASE):
