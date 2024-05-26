@@ -1,0 +1,8 @@
+mypy
+pre-commit
+ruff
+
+# auxiliary requirements
+read-version
+setuptools
+wheel

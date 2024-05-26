@@ -1,0 +1,6 @@
+{
+    "embeddingsProvider": {
+      "provider": "ollama",
+      "model": "nomic-embed-text"
+    }
+  }

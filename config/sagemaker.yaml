@@ -1,0 +1,29 @@
+base_job_name: accelerate-sagemaker-1
+compute_environment: AMAZON_SAGEMAKER
+
+dynamo_backend: "NO"
+
+#ec2_instance_type: local
+
+#distributed_type: DATA_PARALLEL
+#ec2_instance_type: ml.p4d.24xlarge
+
+distributed_type: "NO"
+ec2_instance_type: ml.g5.xlarge
+
+gpu_ids: all
+iam_role_name: AmazonSageMaker-ExecutionRole
+# image_uri: 763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-training:1.13.1-transformers4.26.0-gpu-py39-cu117-ubuntu20.04
+# image_uri: null
+mixed_precision: "no"
+num_machines: 1
+profile: default
+py_version: py310
+pytorch_version: 2.0.0
+region: us-east-1
+transformers_version: 4.28.1
+sagemaker_metrics_file: config/accelerate/sagemaker_metrics_definition.tsv
+use_cpu: false
+# additional_args:
+#   use_spot_instances: True
+#   max_wait: 86400

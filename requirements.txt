@@ -1,0 +1,36 @@
+# torchaudio
+
+transformers
+accelerate[sagemaker]
+bitsandbytes 
+datasets
+peft
+trl
+outlines
+json_repair
+jsonschema
+sentencepiece
+
+omegaconf
+
+matplotlib 
+tensorboard
+torch-tb-profiler
+
+ipykernel
+
+#guidance
+#langchain-core 
+#langchain-community
+#llama-cpp-python
+
+#ipywidgets
+#jupyter
+
+#omegaconf
+#rich
+#torch==2.2.1
+#torchvision
+# datasets
+# evaluate
+# matplotlib

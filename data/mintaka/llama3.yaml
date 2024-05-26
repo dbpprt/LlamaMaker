@@ -1,0 +1,34 @@
+dataset:
+  type: csv
+  train: data/mintaka/train.csv
+  eval: data/mintaka/test.csv
+
+collator:
+  # ref: https://arxiv.org/pdf/2401.13586.pdf
+  
+  # use this if you want to include the loss computation of the prompt
+  # _target_: transformers.DataCollatorForLanguageModeling
+  # mlm: False
+
+  # use this if you want to exclude the loss computation of the prompt
+  _target_: trl.DataCollatorForCompletionOnlyLM
+  response_template: "<|start_header_id|>assistant<|end_header_id|>"
+  mlm: False
+
+append_eos_token: true
+
+# json will be repaired and injected into the prompt
+json_fields: ["label"]
+
+prompt: >
+ <|begin_of_text|><|start_header_id|>system<|end_header_id|>
+ Answer questions as JSON:
+ ```json
+ {{"answerText": str, "category": str, "complexityType": str}}
+ ```<|eot_id|>
+ <|start_header_id|>user<|end_header_id|>
+ {question}<|eot_id|>
+ <|start_header_id|>assistant<|end_header_id|>
+ ```json
+ {label}
+ ```<|eot_id|>

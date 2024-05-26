@@ -1,0 +1,13 @@
+{
+    "recommendations": [
+        "ms-toolsai.jupyter",
+        "marklarah.pre-commit-vscode",
+        "ms-python.vscode-pylance",
+        "ms-python.python",
+        "visualstudioexptteam.vscodeintellicode",
+        "redhat.vscode-yaml",
+        "amazonwebservices.aws-toolkit-vscode",
+        "ms-toolsai.tensorboard",
+        "charliermarsh.ruff"
+    ]
+  }
