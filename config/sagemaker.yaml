@@ -19,7 +19,7 @@ mixed_precision: "no"
 num_machines: 1
 profile: default
 py_version: py310
-pytorch_version: 2.0.0
+pytorch_version: 2.1.0
 region: us-east-1
 transformers_version: 4.36.0
 sagemaker_metrics_file: config/sagemaker_metrics_definition.tsv

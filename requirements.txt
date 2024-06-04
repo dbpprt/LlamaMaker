@@ -17,6 +17,8 @@ matplotlib
 tensorboard
 torch-tb-profiler
 
+# https://smdataparallel.s3.amazonaws.com/binary/pytorch/2.1.0/cu121/2024-02-04/smdistributed_dataparallel-2.1.0-cp310-cp310-linux_x86_64.whl
+
 ipykernel
 
 #guidance

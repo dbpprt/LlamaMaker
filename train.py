@@ -14,7 +14,6 @@ from transformers import (
 )
 from transformers.utils import is_flash_attn_2_available
 from trl import SFTTrainer
-from trl.import_utils import is_npu_available, is_xpu_available
 
 from accelerate import PartialState
 from arguments import ScriptArguments
@@ -95,7 +94,8 @@ def main():
         task_type="CAUSAL_LM",
         lora_alpha=script_args.lora_alpha,
         lora_dropout=script_args.lora_dropout,
-        use_rslora=script_args.use_rs_lora,
+        # not supported in the version of peft
+        # use_rslora=script_args.use_rs_lora,
     )
     trainer_args = {**trainer_args, "peft_config": lora_config}
 
@@ -186,11 +186,7 @@ def main():
 
         # free memory for merging weights
         del model
-        if is_xpu_available():
-            torch.xpu.empty_cache()
-        elif is_npu_available():
-            torch.npu.empty_cache()
-        else:
+        if torch.cuda.is_available():
             torch.cuda.empty_cache()
 
         model = AutoPeftModelForCausalLM.from_pretrained(

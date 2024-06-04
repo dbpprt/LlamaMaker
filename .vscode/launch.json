@@ -443,7 +443,9 @@
                 "--lora_alpha",
                 "16",
                 "--lora_dropout",
-                "0.1"
+                "0.1",
+                "--lora_target_modules",
+                "q_proj,k_proj,v_proj,o_proj,gate_proj,down_proj,up_proj,lm_head"
             ],
             "console": "integratedTerminal"
         }
