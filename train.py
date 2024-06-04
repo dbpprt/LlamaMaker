@@ -137,6 +137,8 @@ def main():
         per_device_train_batch_size=script_args.per_device_train_batch_size,
         per_device_eval_batch_size=script_args.per_device_eval_batch_size * 2,
         gradient_accumulation_steps=script_args.gradient_accumulation_steps,
+        # WIP: should this be enabled by default?
+        auto_find_batch_size=True,
         optim=script_args.optim,
         save_steps=script_args.save_steps,
         logging_steps=script_args.logging_steps,
