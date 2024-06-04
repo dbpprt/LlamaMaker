@@ -17,6 +17,10 @@ class ScriptArguments:
         default="./data/examples/llama3.yaml",
         metadata={"help": "The path to the data configuration file (see documentation for more details)."},
     )
+    debug: Optional[bool] = field(
+        default=False,
+        metadata={"help": "Start training in debug mode (subsample dataset, etc)."},
+    )
     do_train: Optional[bool] = field(
         default=True,
         metadata={"help": "Whether to run training."},

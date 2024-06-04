@@ -1,7 +1,7 @@
-
-metric_name	metric_regex
-train:epoch	^\[Training\] Epoch: ([0-999]) Completed
-train:loss	^\[Training\] Epoch: (?:d) Completed | Loss: ([-+0-9e.]+) -?
-eval:epoch	^\[Eval\] Epoch: ([0-999]) Completed
-eval:loss	^\[Eval\] Epoch: (?:d) Completed | Loss: ([-+0-9e.]+) -?
-eval:f1	    ^\[Eval\] Epoch: (?:d) Completed.*| F1: ([-+0-9e.]+)
+"metric_name	metric_regex"	
+epoch	'epoch':\s*(\d+(?:\.\d+)?)
+train:loss	'loss':\s*(\d+(?:\.\d+)?)
+train:grad_norm	'grad norm':\s*(\d+(?:\.\d+)?)
+eval:loss	'eval_loss':\s*(\d+(?:\.\d+)?)
+eval:samples_per_second	'eval_samples_per_second':\s*(\d+(?:\.\d+)?)
+eval:eval_steps_per_second	'eval_steps_per_second':\s*(\d+(?:\.\d+)?)

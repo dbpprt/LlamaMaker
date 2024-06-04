@@ -120,10 +120,20 @@ def main():
 
     collator = instantiate(data_config.collator, tokenizer=tokenizer)
 
-    train_dataset = load_dataset(
+    dataset = load_dataset(
         data_config.dataset.type,
         data_files={"train": data_config.dataset.train, "eval": data_config.dataset.eval},
     )
+
+    train_dataset = dataset["train"]
+    eval_dataset = dataset["eval"]
+
+    if script_args.debug:
+        print("Debug mode, subsampling dataset to 10 samples.")
+        num_samples_to_select = 10
+
+        train_dataset = train_dataset.select(range(num_samples_to_select))
+        eval_dataset = eval_dataset.select(range(num_samples_to_select))
 
     training_arguments = TrainingArguments(
         report_to="tensorboard",
@@ -135,9 +145,9 @@ def main():
         logging_dir=output_dir,
         overwrite_output_dir=True,
         per_device_train_batch_size=script_args.per_device_train_batch_size,
-        per_device_eval_batch_size=script_args.per_device_eval_batch_size * 2,
+        per_device_eval_batch_size=script_args.per_device_eval_batch_size,
         gradient_accumulation_steps=script_args.gradient_accumulation_steps,
-        # WIP: should this be enabled by default?
+        # TODO: should this be enabled by default?
         auto_find_batch_size=True,
         optim=script_args.optim,
         save_steps=script_args.save_steps,
@@ -155,14 +165,16 @@ def main():
         neftune_noise_alpha=script_args.neftune_noise_alpha,
         load_best_model_at_end=True,
         save_total_limit=script_args.save_limit,
+        # TODO: Slows down training
+        skip_memory_metrics=False,
     )
 
     trainer = SFTTrainer(
         callbacks=[ModelInfoCallback()],
         model=model,
         args=training_arguments,
-        train_dataset=train_dataset["train"],
-        eval_dataset=train_dataset["eval"],
+        train_dataset=train_dataset,
+        eval_dataset=eval_dataset,
         packing=script_args.packing,
         tokenizer=tokenizer,
         max_seq_length=script_args.max_seq_length,
