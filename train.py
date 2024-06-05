@@ -87,19 +87,18 @@ def main():
 
     lora_config = LoraConfig(
         r=script_args.lora_r,
-        # TODO: Make me configurable
         modules_to_save=lora_modules_to_save,
         target_modules=lora_target_modules,
         bias="none",
         task_type="CAUSAL_LM",
         lora_alpha=script_args.lora_alpha,
         lora_dropout=script_args.lora_dropout,
-        # not supported in the version of peft
+        # TODO: not supported in the version of peft available on SageMaker
         # use_rslora=script_args.use_rs_lora,
     )
     trainer_args = {**trainer_args, "peft_config": lora_config}
 
-    # WIP: is this correct?
+    # TODO: is this correct?
     tokenizer = AutoTokenizer.from_pretrained(
         script_args.model_id,
         padding_side="right",
@@ -107,6 +106,7 @@ def main():
         add_bos_token=True,
     )
 
+    # TODO: this feels so wrong...
     if re.search("tinyllama", script_args.model_id, re.IGNORECASE):
         # tokenizer.eos_token_id = 32002
         tokenizer.pad_token_id = tokenizer.eos_token_id
@@ -117,6 +117,17 @@ def main():
         raise ValueError("Model not supported")
 
     model.config.pad_token_id = tokenizer.pad_token_id
+
+    # if re.match("[^/]+/llama", base_model_name):
+    #     model.config.pad_token_id = tokenizer.pad_token_id = 0
+    #     model.config.bos_token_id = tokenizer.bos_token_id = 1
+    #     model.config.eos_token_id = tokenizer.eos_token_id = 2
+
+    # if re.match("[^/]+/llama", base_model_name):
+    #     model.config.pad_token_id = get_tokenizer(
+    #         base_model_name).pad_token_id = 0
+    #     model.config.bos_token_id = 1
+    #     model.config.eos_token_id = 2
 
     collator = instantiate(data_config.collator, tokenizer=tokenizer)
 
@@ -148,7 +159,7 @@ def main():
         per_device_eval_batch_size=script_args.per_device_eval_batch_size,
         gradient_accumulation_steps=script_args.gradient_accumulation_steps,
         # TODO: should this be enabled by default?
-        auto_find_batch_size=True,
+        # auto_find_batch_size=True,
         optim=script_args.optim,
         save_steps=script_args.save_steps,
         logging_steps=script_args.logging_steps,
@@ -166,7 +177,7 @@ def main():
         load_best_model_at_end=True,
         save_total_limit=script_args.save_limit,
         # TODO: Slows down training
-        skip_memory_metrics=False,
+        # skip_memory_metrics=False,
     )
 
     trainer = SFTTrainer(
