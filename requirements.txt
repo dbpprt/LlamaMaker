@@ -10,6 +10,7 @@ outlines
 json_repair
 jsonschema
 sentencepiece
+sagemaker-training
 
 omegaconf
 

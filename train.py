@@ -20,6 +20,7 @@ from arguments import ScriptArguments
 from src.callbacks import ModelInfoCallback
 from src.formatting import formatting_func
 from src.utils import instantiate
+from src.utils.misc import is_ampere_or_newer
 
 
 def main():
@@ -35,7 +36,10 @@ def main():
     use_flash_attention = script_args.use_flash_attention_2
     try:
         if use_flash_attention and not is_flash_attn_2_available():
-            print("Flash attention 2 not available, disabling it")
+            print("FlashAttention not available, disabling it.")
+            use_flash_attention = False
+        if not is_ampere_or_newer():
+            print("FlashAttention only supports Ampere GPUs or newer.")
             use_flash_attention = False
     except:  # noqa: E722
         # this shouldn't happen actually
