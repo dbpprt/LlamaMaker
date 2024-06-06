@@ -454,6 +454,18 @@
                 // "embed_tokens",
             ],
             "console": "integratedTerminal"
+        },{
+            "name": "launcher.py",
+            "type": "python",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "program": "${workspaceFolder}/launcher.py",
+            "args": [
+                "launch",
+                "--config_file=./config/sagemaker.yaml",
+                "--remote_config_file=./config/local.yaml",
+                "train.py",
+            ]
         }
     ]
 }

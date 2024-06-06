@@ -3,10 +3,10 @@ import json
 import os
 
 from sagemaker.huggingface import HuggingFace
-from utils.args import CustomArgumentParser, _convert_nargs_to_dict
-from utils.misc import merge_dicts
 
 from accelerate.commands.config.config_args import SageMakerConfig
+from src.utils.args import CustomArgumentParser, _convert_nargs_to_dict
+from src.utils.misc import merge_dicts
 
 
 def launch_command_parser(subparsers=None):
@@ -25,6 +25,21 @@ def launch_command_parser(subparsers=None):
         "--config_file",
         default=None,
         help="The config file to use for the default values in the launching script.",
+    )
+
+    parser.add_argument(
+        "--remote_config_file",
+        default=None,
+        help="The config file to use for the default values in the launching script on the remote machine.",
+    )
+
+    parser.add_argument(
+        "training_script",
+        type=str,
+        help=(
+            "The full path to the script to be launched in parallel, followed by all the arguments for the training "
+            "script."
+        ),
     )
 
     # Other arguments of the training scripts
@@ -142,17 +157,17 @@ def main():
     parser = CustomArgumentParser("Llame SageMaker launcher", usage="launcher <command> [<args>]", allow_abbrev=False)
     subparsers = parser.add_subparsers(help="Llame command helpers")
 
-    # Register commands
+    # register commands
     launch_command_parser(subparsers=subparsers)
 
-    # Let's go
+    # let's go
     args = parser.parse_args()
 
     if not hasattr(args, "func"):
         parser.print_help()
         exit(1)
 
-    # Run
+    # run
     args.func(args)
 
 
