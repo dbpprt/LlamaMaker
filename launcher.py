@@ -15,7 +15,7 @@ def launch_command_parser(subparsers=None):
         parser = subparsers.add_parser("launch", description=description, add_help=False, allow_abbrev=False)
     else:
         parser = CustomArgumentParser(
-            "Llame launch command",
+            "LlamaMaker launch command",
             description=description,
             add_help=False,
             allow_abbrev=False,
@@ -154,8 +154,10 @@ def launch_command(args):
 
 
 def main():
-    parser = CustomArgumentParser("Llame SageMaker launcher", usage="launcher <command> [<args>]", allow_abbrev=False)
-    subparsers = parser.add_subparsers(help="Llame command helpers")
+    parser = CustomArgumentParser(
+        "LlamaMaker SageMaker launcher", usage="launcher <command> [<args>]", allow_abbrev=False
+    )
+    subparsers = parser.add_subparsers(help="LlamaMaker command helpers")
 
     # register commands
     launch_command_parser(subparsers=subparsers)
