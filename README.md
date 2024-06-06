@@ -14,10 +14,10 @@
     <img src="docs/images/logo.png" alt="Logo" width="120" height="120">
   </a>
 
-<h3 align="center">LeanLLM-X - ?</h3>
+<h3 align="center">LlamaMaker</h3>
 
   <p align="center">
-    Many use-case require (semi-)structured input and output. Whilst this can be achieved, <b>ljm</b> provides a toolbox to fine-tune LLMs specifically on generating JSON.
+    Fine-tuning toolkit for Llama on SageMaker using the HuggingFace ecosystem.
     <br />
     <a href="https://github.com/github_username/repo_name"><strong>Explore the docs »</strong></a>
     <br />

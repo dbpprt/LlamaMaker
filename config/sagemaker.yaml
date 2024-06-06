@@ -8,7 +8,7 @@ dynamo_backend: "NO"
 #distributed_type: DATA_PARALLEL
 #ec2_instance_type: ml.p4d.24xlarge
 
-distributed_type: DATA_PARALLEL
+distributed_type: "NO"
 ec2_instance_type: ml.p3.16xlarge
 
 #distributed_type: "NO"

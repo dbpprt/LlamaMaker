@@ -149,7 +149,7 @@ def launch_command(args):
     print(json.dumps(args))
     huggingface_estimator = HuggingFace(**args)
 
-    # huggingface_estimator.fit(inputs=sagemaker_inputs)
+    huggingface_estimator.fit(inputs=sagemaker_inputs)
     print(f"You can find your model data at: {huggingface_estimator.model_data}")
 
 
