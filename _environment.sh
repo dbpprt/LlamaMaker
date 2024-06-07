@@ -20,14 +20,15 @@ fi
 
 # conda update -n base -c conda-forge conda
 
-if ! conda env list | grep -q "shopgpt"; then
+if ! conda env list | grep -q "llamamaker"; then
     conda env create -f ./environment.yaml
 else
     conda env update -f ./environment.yaml
 fi
 
-# conda activate shopgpt
+conda activate llamamaker
 
-#pip install flash-attn --no-build-isolation
+pip install flash-attn --no-build-isolation
+
 #conda install xformers -c xformers
 #pip install "unsloth[conda] @ git+https://github.com/unslothai/unsloth.git"

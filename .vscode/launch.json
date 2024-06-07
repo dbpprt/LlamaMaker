@@ -415,7 +415,7 @@
             "cwd": "${workspaceFolder}",
             "module": "accelerate.commands.launch",
             "args": [
-                "--config_file=./config/sagemaker.yaml",
+                "--config_file=./config/distributed_local.yaml",
                 "train.py",
                 // "--use_unslooth",
                 "--model_id",
@@ -426,7 +426,7 @@
                 "--per_device_train_batch_size",
                 "1",
                 "--per_device_eval_batch_size",
-                "1",
+                "2",
                 "--gradient_accumulation_steps",
                 "16",
                 "--max_seq_length",

@@ -1,5 +1,4 @@
 import os
-import re
 import subprocess
 import sys
 
@@ -30,7 +29,9 @@ def main():
     script_args = parser.parse_args_into_dataclasses()[0]
     data_config = OmegaConf.load(script_args.data_config)
     output_dir = os.path.join(script_args.output_dir, script_args.experiment_name)
-    set_caching_enabled(False)
+
+    if script_args.set_caching_disabled:
+        set_caching_enabled(False)
 
     trainer_args = {}
 
@@ -120,19 +121,20 @@ def main():
         padding_side="right",
         add_eos_token=True,
         add_bos_token=True,
+        use_fast=False,
     )
 
     # TODO: this feels so wrong...
-    if re.search("tinyllama", script_args.model_id, re.IGNORECASE):
-        # tokenizer.eos_token_id = 32002
-        tokenizer.pad_token_id = tokenizer.eos_token_id
-    elif re.search("llama", script_args.model_id, re.IGNORECASE):
-        # tokenizer.eos_token_id = tokenizer.pad_token_id
-        tokenizer.pad_token_id = tokenizer.eos_token_id
-    else:
-        raise ValueError("Model not supported")
+    # if re.search("tinyllama", script_args.model_id, re.IGNORECASE):
+    #     # tokenizer.eos_token_id = 32002
+    #     tokenizer.pad_token_id = tokenizer.eos_token_id
+    # elif re.search("llama", script_args.model_id, re.IGNORECASE):
+    #     # tokenizer.eos_token_id = tokenizer.pad_token_id
+    #     tokenizer.pad_token_id = tokenizer.eos_token_id
+    # else:
+    #     raise ValueError("Model not supported")
 
-    model.config.pad_token_id = tokenizer.pad_token_id
+    # model.config.pad_token_id = tokenizer.pad_token_id
 
     # if re.match("[^/]+/llama", base_model_name):
     #     model.config.pad_token_id = tokenizer.pad_token_id = 0
@@ -144,6 +146,10 @@ def main():
     #         base_model_name).pad_token_id = 0
     #     model.config.bos_token_id = 1
     #     model.config.eos_token_id = 2
+
+    model.config.pad_token_id = tokenizer.pad_token_id = 0
+    model.config.bos_token_id = tokenizer.bos_token_id = 1
+    model.config.eos_token_id = tokenizer.eos_token_id = 2
 
     collator = instantiate(data_config.collator, tokenizer=tokenizer)
 
@@ -192,6 +198,7 @@ def main():
         neftune_noise_alpha=script_args.neftune_noise_alpha,
         load_best_model_at_end=True,
         save_total_limit=script_args.save_limit,
+        ddp_find_unused_parameters=False,
         # TODO: Slows down training
         # skip_memory_metrics=False,
     )

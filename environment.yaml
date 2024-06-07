@@ -1,4 +1,4 @@
-name: leanllm
+name: llamamaker
 channels:
   - pytorch
   - conda-forge

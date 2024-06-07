@@ -21,6 +21,7 @@ class ScriptArguments:
         default=False,
         metadata={"help": "Start training in debug mode (subsample dataset, etc)."},
     )
+    set_caching_disabled: Optional[bool] = field(default=False, metadata={"help": "Disable caching"})
     do_train: Optional[bool] = field(
         default=True,
         metadata={"help": "Whether to run training."},
@@ -48,7 +49,7 @@ class ScriptArguments:
         },
     )
     use_4bit_double_quant: Optional[bool] = field(
-        default=False,
+        default=True,
         metadata={"help": "Use 4bit double quant."},
     )
     per_device_train_batch_size: Optional[int] = field(default=1)
