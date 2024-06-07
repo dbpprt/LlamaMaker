@@ -2,7 +2,8 @@ import argparse
 import json
 import os
 
-from sagemaker.huggingface import HuggingFace
+# from sagemaker.huggingface import HuggingFace
+from sagemaker.pytorch import PyTorch
 
 from accelerate.commands.config.config_args import SageMakerConfig
 from src.utils.args import CustomArgumentParser, _convert_nargs_to_dict
@@ -147,8 +148,8 @@ def launch_command(args):
         args = merge_dicts(sagemaker_config.additional_args, args)
 
     print(json.dumps(args))
-    huggingface_estimator = HuggingFace(**args)
-
+    # huggingface_estimator = HuggingFace(**args)
+    huggingface_estimator = PyTorch(**args)
     huggingface_estimator.fit(inputs=sagemaker_inputs)
     print(f"You can find your model data at: {huggingface_estimator.model_data}")
 

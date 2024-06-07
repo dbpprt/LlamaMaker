@@ -1,5 +1,7 @@
 import os
 import re
+import subprocess
+import sys
 
 import torch
 from datasets import load_dataset, set_caching_enabled
@@ -35,6 +37,16 @@ def main():
     # we only use flash attention if its available and we have cuda available
     use_flash_attention = script_args.use_flash_attention_2
     try:
+        if (
+            use_flash_attention
+            and not is_flash_attn_2_available()
+            and torch.cuda.is_available()
+            and is_ampere_or_newer()
+        ):
+            print("FlashAttention is not available, though CUDA is availeble. Let's try installing FlashAttention")
+            subprocess.check_call(
+                [sys.executable, "-m", "pip", "install", "flash-attn", "--no-build-isolation", "--upgrade", "--force"]
+            )
         if use_flash_attention and not is_flash_attn_2_available():
             print("FlashAttention not available, disabling it.")
             use_flash_attention = False
