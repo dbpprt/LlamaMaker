@@ -16,7 +16,7 @@ on:
         default: latest
       lifecycle_policy_file:
         description: Path to the lifecycle policy JSON file (default = 'policy.json')
-        default: "docker/policy.json"
+        default: "./docker/policy.json"
         type: string
       backend_s3_bucket:
         description: Name of the S3bucket for Terraform backend
@@ -100,7 +100,7 @@ jobs:
           terraform -chdir=docker apply \
             -var 'repository_name=${{ env.ECR_REPO_NAME }}' \
             -var 'lifecycle_policy=${{ inputs.lifecycle_policy_file }}' \
-            -var 'iam_role=arn:aws:iam::${{ inputs.aws_account_id }}:role/${{ inputs.github_iam_role }}' \
+            -var 'iam_role=arn:aws:iam::271150355607:role/service-role/codebuild-LlamaMaker-service-role' \
             -var 'aws_account_id=${{ inputs.aws_account_id }}' \
             -auto-approve
         # working-directory: ${{ github.action_path }}
