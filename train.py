@@ -22,6 +22,7 @@ from src.callbacks import ModelInfoCallback
 from src.formatting import formatting_func
 from src.utils import instantiate
 from src.utils.misc import is_ampere_or_newer
+from src.utils.sagemaker import restart_program
 
 
 def main():
@@ -45,9 +46,24 @@ def main():
             and is_ampere_or_newer()
         ):
             print("FlashAttention is not available, though CUDA is availeble. Let's try installing FlashAttention")
+
             subprocess.check_call(
-                [sys.executable, "-m", "pip", "install", "flash-attn", "--no-build-isolation", "--upgrade", "--force"]
+                [sys.executable, "-m", "pip", "install", "accelerate==0.27.2"],
             )
+
+            env = os.environ.copy()
+            env["MAX_JOBS"] = "4"
+            subprocess.check_call(
+                [sys.executable, "-m", "pip", "install", "git+https://github.com/NVIDIA/TransformerEngine.git@stable"],
+                env=env,
+            )
+
+            print("Restarting with newly installed packages...")
+            restart_program()
+
+            # subprocess.check_call(
+            #     [sys.executable, "-m", "pip", "install", "flash-attn", "--no-build-isolation", "--upgrade"]
+            # )
         if use_flash_attention and not is_flash_attn_2_available():
             print("FlashAttention not available, disabling it.")
             use_flash_attention = False

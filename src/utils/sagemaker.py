@@ -1,6 +1,7 @@
 import logging
 import os
 import subprocess
+import sys
 import tarfile
 import tempfile
 from functools import reduce
@@ -8,6 +9,7 @@ from pathlib import Path
 from typing import Any, List, Tuple
 from urllib.parse import urljoin
 
+import psutil
 from sagemaker.estimator import _TrainingJob
 
 
@@ -111,6 +113,22 @@ def _package_code(script_dir: str, s3_base: str) -> str:
 #             env["PATH"] += os.pathsep + os.pathsep.join(command.extend_path)
 
 #         _run_command(args=command.cmd, shell=command.shell, env=env, cwd=cwd)
+
+
+def restart_program():
+    """Restarts the current program, with file objects and descriptors
+    cleanup
+    """
+
+    try:
+        p = psutil.Process(os.getpid())
+        for handler in p.get_open_files() + p.connections():
+            os.close(handler.fd)
+    except Exception as e:
+        logging.error(e)
+
+    python = sys.executable
+    os.execl(python, python, *sys.argv)
 
 
 def _run_command(args: Any, shell: bool, env: Any, cwd: Any) -> Tuple[str, str]:
