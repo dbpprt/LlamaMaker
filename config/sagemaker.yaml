@@ -17,7 +17,7 @@ ec2_instance_type: ml.g5.12xlarge
 gpu_ids: all
 iam_role_name: AmazonSageMaker-ExecutionRole
 
-image_uri: 271150355607.dkr.ecr.us-east-1.amazonaws.com/dbpprt_llamamaker:snapshot-artifact
+image_uri: 271150355607.dkr.ecr.us-east-1.amazonaws.com/dbpprt_llamamaker:latest
 #image_uri: 763104351884.dkr.ecr.us-east-1.amazonaws.com/pytorch-training:2.2.0-gpu-py310-cu121-ubuntu20.04-sagemaker
 #image_uri: 763104351884.dkr.ecr.us-east-1.amazonaws.com/pytorch-training:2.3.0-gpu-py311-cu121-ubuntu20.04-sagemaker
 #image_uri: 763104351884.dkr.ecr.us-east-1.amazonaws.com/pytorch-training:2.2.0-gpu-py310-cu118-ubuntu20.04-sagemaker
