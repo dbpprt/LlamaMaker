@@ -1,13 +1,41 @@
-# Set the default value for the REGION build argument
-ARG REGION=us-east-1
+FROM nvcr.io/nvidia/pytorch:24.05-py3
 
-# SageMaker PyTorch image for TRAINING
-FROM 763104351884.dkr.ecr.${REGION}.amazonaws.com/pytorch-training:2.3.0-gpu-py311-cu121-ubuntu20.04-sagemaker
+ENV DEBIAN_FRONTEND=noninteractive \
+    LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/local/lib"
 
-RUN pip install --pre torch --force-reinstall --index-url https://download.pytorch.org/whl/nightly/cu121
-RUN pip install git+https://github.com/huggingface/transformers
+ENV SAGEMAKER_TRAINING_MODULE=sagemaker_pytorch_container.training:main
 
-RUN MAX_JOBS=4 pip install git+https://github.com/NVIDIA/TransformerEngine.git@stable
+RUN apt-get update \
+ && apt-get upgrade -y \
+ && apt-get autoremove -y \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
 
-# Display installed packages for reference
-RUN pip freeze
+ # For conda ssl verification
+ENV REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+RUN curl -L -o ~/miniforge3.sh https://github.com/conda-forge/miniforge/releases/download/${MINIFORGE3_VERSION}/Miniforge3-${MINIFORGE3_VERSION}-Linux-x86_64.sh \
+ && chmod +x ~/miniforge3.sh \
+ && ~/miniforge3.sh -b -p /opt/conda \
+ && rm ~/miniforge3.sh
+
+RUN pip install --upgrade pip --no-cache-dir --trusted-host pypi.org --trusted-host files.pythonhosted.org
+
+# Install SM packages
+RUN pip install --no-cache-dir -U \
+    smclarify \
+    "sagemaker>=2,<3" \
+    "sagemaker-experiments<1" \
+    sagemaker-pytorch-training \
+    sagemaker-training
+
+# Copy workaround script for incorrect hostname
+COPY docker/changehostname.c /
+COPY docker/start_with_right_hostname.sh /usr/local/bin/start_with_right_hostname.sh
+
+RUN chmod +x /usr/local/bin/start_with_right_hostname.sh
+
+# Removing the cache as it is needed for security verification
+RUN rm -rf /root/.cache | true
+
+ENTRYPOINT ["bash", "-m", "start_with_right_hostname.sh"]
+CMD ["/bin/bash"]
