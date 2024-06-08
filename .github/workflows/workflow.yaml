@@ -117,7 +117,7 @@ jobs:
           mask-password: "true" # see: https://github.com/aws-actions/amazon-ecr-login#docker-credentials
 
       - name: Build, tag, and push image to Amazon ECR
-        id: build-publish
+        id: just-pull
         shell: bash
         run: |
           docker pull 763104351884.dkr.ecr.us-east-1.amazonaws.com/pytorch-training:2.3.0-gpu-py311-cu121-ubuntu20.04-sagemaker
