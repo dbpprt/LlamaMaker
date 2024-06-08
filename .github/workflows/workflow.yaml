@@ -119,6 +119,12 @@ jobs:
       - name: Build, tag, and push image to Amazon ECR
         id: build-publish
         shell: bash
+        run: |
+          docker pull 763104351884.dkr.ecr.us-east-1.amazonaws.com/pytorch-training:2.3.0-gpu-py311-cu121-ubuntu20.04-sagemaker
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-publish
+        shell: bash
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ env.ECR_REPO_NAME }}
