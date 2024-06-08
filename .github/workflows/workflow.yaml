@@ -32,6 +32,7 @@ on:
         type: string
       aws_account_id:
         description: AWS Account ID
+        default: "271150355607"
         type: string
       aws_region:
         description: Target AWS Region
