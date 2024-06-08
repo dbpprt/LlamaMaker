@@ -116,7 +116,7 @@ jobs:
           registries: ${{ inputs.aws_account_id }}
           mask-password: "true" # see: https://github.com/aws-actions/amazon-ecr-login#docker-credentials
 
-      - name: Build, tag, and push image to Amazon ECR
+      - name: Pull
         id: just-pull
         shell: bash
         run: |
