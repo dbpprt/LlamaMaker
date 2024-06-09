@@ -11,6 +11,7 @@ json_repair
 jsonschema
 sentencepiece
 sagemaker-training
+tabulate
 
 omegaconf
 

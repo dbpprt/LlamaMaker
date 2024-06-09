@@ -21,6 +21,7 @@ from arguments import ScriptArguments
 from src.callbacks import ModelInfoCallback
 from src.formatting import formatting_func
 from src.utils import instantiate
+from src.utils.env import print_env
 from src.utils.misc import is_ampere_or_newer
 from src.utils.sagemaker import restart_program
 
@@ -35,6 +36,8 @@ def main():
         set_caching_enabled(False)
 
     trainer_args = {}
+
+    print_env()
 
     # we only use flash attention if its available and we have cuda available
     use_flash_attention = script_args.use_flash_attention_2
