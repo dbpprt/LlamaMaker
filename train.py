@@ -37,7 +37,9 @@ def main():
 
     trainer_args = {}
 
-    print_env()
+    # TODO: Not sure if smart to set this to True by default, but it's a good option for debugging
+    if 1 + 1 == 3:
+        print_env()
 
     # we only use flash attention if its available and we have cuda available
     use_flash_attention = script_args.use_flash_attention_2
@@ -243,7 +245,8 @@ def main():
         **trainer_args,
     )
 
-    trainer.train()
+    with torch.cuda.amp.autocast():
+        trainer.train()
 
     if trainer.accelerator.is_main_process:
         trainer.save_model(output_dir)

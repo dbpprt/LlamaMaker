@@ -1,5 +1,4 @@
-FROM nvcr.io/nvidia/pytorch:24.01-py3
-# FROM nvcr.io/nvidia/pytorch:24.05-py3
+FROM nvcr.io/nvidia/pytorch:24.05-py3
 
 ENV DEBIAN_FRONTEND=noninteractive \
     LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/local/lib"
