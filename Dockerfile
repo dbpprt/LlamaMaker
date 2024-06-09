@@ -28,6 +28,8 @@ RUN pip install --no-cache-dir -U \
     sagemaker-pytorch-training \
     sagemaker-training
 
+WORKDIR /
+
 # Copy workaround script for incorrect hostname
 COPY docker/changehostname.c /
 COPY docker/start_with_right_hostname.sh /usr/local/bin/start_with_right_hostname.sh
