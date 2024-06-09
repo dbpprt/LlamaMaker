@@ -70,7 +70,7 @@ jobs:
           set -eux
           terraform -chdir=docker apply \
             -var 'repository_name=${{ env.ECR_REPO_NAME }}' \
-            -var 'lifecycle_policy=$LIFECYCLE_POLICY' \
+            -var 'lifecycle_policy=${{ env.LIFECYCLE_POLICY }}' \
             -var 'iam_role=$ROLE' \
             -var 'aws_account_id=${{ env.ACCOUNT_ID }}' \
             -auto-approve
