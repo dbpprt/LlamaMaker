@@ -55,8 +55,8 @@ jobs:
             -backend-config='skip_metadata_api_check=true' \
             -backend-config='skip_region_validation=true' \
             -backend-config='skip_credentials_validation=true' \
-            -backend-config='region=$REGION' \
-            -backend-config='bucket=$TERRAFORM_S3_BUCKET' \
+            -backend-config='region=${{ env.REGION }}' \
+            -backend-config='bucket=${{ env.TERRAFORM_S3_BUCKET }}' \
             -backend-config='key=docker-ecr/terraform-${{ env.ECR_REPO_NAME }}.tfstate' \
         working-directory: ${{ github.action_path }}
 
@@ -72,7 +72,7 @@ jobs:
             -var 'repository_name=${{ env.ECR_REPO_NAME }}' \
             -var 'lifecycle_policy=$LIFECYCLE_POLICY' \
             -var 'iam_role=$ROLE' \
-            -var 'aws_account_id=$ACCOUNT_ID' \
+            -var 'aws_account_id=${{ env.ACCOUNT_ID }}' \
             -auto-approve
         # working-directory: ${{ github.action_path }}
 
@@ -96,9 +96,9 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ env.ECR_REPO_NAME }}
-          IMAGE_TAG: ${{ inputs.image_tag }}
+          IMAGE_TAG: latest
         run: |
-          docker build "./" -f "$DOCKERFILE" -t "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          docker build "./" -f "${{ env.DOCKERFILE }}" -t "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
           docker push "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
           echo "IMAGE $IMAGE_TAG is pushed to $ECR_REGISTRY/$ECR_REPOSITORY"
           echo "image_tag=$IMAGE_TAG" 
