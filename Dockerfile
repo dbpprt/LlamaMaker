@@ -31,7 +31,7 @@ RUN pip install --no-cache-dir -U \
 WORKDIR /
 
 # Copy workaround script for incorrect hostname
-COPY docker/changehostname.c /
+COPY docker/changehostname.c /changehostname.c
 COPY docker/start_with_right_hostname.sh /usr/local/bin/start_with_right_hostname.sh
 
 RUN chmod +x /usr/local/bin/start_with_right_hostname.sh

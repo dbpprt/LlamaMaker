@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 if [[ "$1" = "train" ]]; then
+     ls -a
      CURRENT_HOST=$(jq .current_host  /opt/ml/input/config/resourceconfig.json)
      sed -ie "s/PLACEHOLDER_HOSTNAME/$CURRENT_HOST/g" changehostname.c
      gcc -o changehostname.o -c -fPIC -Wall changehostname.c
