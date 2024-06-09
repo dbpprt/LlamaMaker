@@ -113,6 +113,7 @@ def main():
         pretrained_model_name_or_path=script_args.model_id,
         device_map=device_map,
         trust_remote_code=True,
+        torch_dtype="auto",
         attn_implementation="sdpa" if not use_flash_attention else "flash_attention_2",
         use_cache=not script_args.gradient_checkpointing,
         **model_kwargs,
