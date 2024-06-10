@@ -17,6 +17,7 @@ from trl import SFTTrainer
 from accelerate import PartialState
 from arguments import ScriptArguments
 from src.callbacks import ModelInfoCallback
+from src.constants import SM_TENSORBOARD_OUTPUT_DIRECTORY
 from src.formatting import formatting_func
 from src.utils import instantiate
 from src.utils.env import print_env
@@ -27,10 +28,18 @@ def main():
     parser = HfArgumentParser(ScriptArguments)
     script_args = parser.parse_args_into_dataclasses()[0]
     data_config = OmegaConf.load(script_args.data_config)
-    output_dir = os.path.join(script_args.output_dir, script_args.experiment_name)
+    output_dir = logging_dir = os.path.join(script_args.output_dir, script_args.experiment_name)
 
     if script_args.set_caching_disabled:
         set_caching_enabled(False)
+
+    if "SM_TRAINING_ENV" in os.environ:
+        print("Running in SageMaker. Optimizing parameters...")
+        script_args.output_dir = output_dir = os.environ["SM_MODEL_DIR"]
+        print(f"Setting output dir to {output_dir}")
+        # TODO: This should be a constant ideally
+        logging_dir = SM_TENSORBOARD_OUTPUT_DIRECTORY
+        print(f"Setting log directory to {logging_dir}")
 
     trainer_args = {}
 
@@ -169,7 +178,7 @@ def main():
         evaluation_strategy="steps",
         eval_steps=script_args.eval_steps,
         output_dir=output_dir,
-        logging_dir=output_dir,
+        logging_dir=logging_dir,
         overwrite_output_dir=True,
         per_device_train_batch_size=script_args.per_device_train_batch_size,
         per_device_eval_batch_size=script_args.per_device_eval_batch_size,

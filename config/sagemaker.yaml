@@ -1,29 +1,7 @@
 base_job_name: accelerate-sagemaker-1
-compute_environment: AMAZON_SAGEMAKER
-
-dynamo_backend: "NO"
-
-#ec2_instance_type: local
-
-#distributed_type: DATA_PARALLEL
-#ec2_instance_type: ml.p4d.24xlarge
-
-distributed_type: "NO"
-ec2_instance_type: ml.g5.12xlarge
-
-#distributed_type: "NO"
-# ec2_instance_type: ml.g5.48xlarge
-
-gpu_ids: all
+ec2_instance_type: ml.g5.48xlarge
 iam_role_name: AmazonSageMaker-ExecutionRole
-
 image_uri: 271150355607.dkr.ecr.us-east-1.amazonaws.com/dbpprt_llamamaker:latest
-#image_uri: 763104351884.dkr.ecr.us-east-1.amazonaws.com/pytorch-training:2.2.0-gpu-py310-cu121-ubuntu20.04-sagemaker
-#image_uri: 763104351884.dkr.ecr.us-east-1.amazonaws.com/pytorch-training:2.3.0-gpu-py311-cu121-ubuntu20.04-sagemaker
-#image_uri: 763104351884.dkr.ecr.us-east-1.amazonaws.com/pytorch-training:2.2.0-gpu-py310-cu118-ubuntu20.04-sagemaker
-#image_uri: 763104351884.dkr.ecr.us-east-1.amazonaws.com/pytorch-inference:2.2.0-gpu-py310-cu118-ubuntu20.04-sagemaker
-
-mixed_precision: "no"
 num_machines: 1
 profile: default
 #py_version: py311
@@ -31,7 +9,6 @@ profile: default
 region: us-east-1
 #transformers_version: 4.36.0
 sagemaker_metrics_file: config/sagemaker_metrics_definition.tsv
-use_cpu: false
 #additional_args:
    #use_spot_instances: True
    #max_wait: 86400

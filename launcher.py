@@ -1,13 +1,46 @@
 import argparse
-import json
 import os
+from dataclasses import dataclass
+from typing import Optional
+
+import sagemaker
+import yaml
+from sagemaker import s3_utils
+from sagemaker.debugger import TensorBoardOutputConfig
 
 # from sagemaker.huggingface import HuggingFace
 from sagemaker.pytorch import PyTorch
 
-from accelerate.commands.config.config_args import SageMakerConfig
+from src.constants import SM_TENSORBOARD_OUTPUT_DIRECTORY
 from src.utils.args import CustomArgumentParser, _convert_nargs_to_dict
 from src.utils.misc import merge_dicts
+from src.utils.sagemaker import _s3_combine_url
+
+
+@dataclass
+class SageMakerConfig:
+    ec2_instance_type: str
+    iam_role_name: str
+    image_uri: Optional[str] = None
+    profile: Optional[str] = None
+    region: str = "us-east-1"
+    num_machines: int = 1
+    base_job_name: str = f"accelerate-sagemaker-{num_machines}"
+    pytorch_version: Optional[str] = None
+    transformers_version: Optional[str] = None
+    py_version: Optional[str] = None
+    sagemaker_inputs_file: str = None
+    sagemaker_metrics_file: str = None
+    additional_args: dict = None
+
+    @classmethod
+    def from_yaml_file(cls, yaml_file):
+        with open(yaml_file, encoding="utf-8") as f:
+            config_dict = yaml.safe_load(f)
+        extra_keys = sorted(set(config_dict.keys()) - set(cls.__dataclass_fields__.keys()))
+        if len(extra_keys) > 0:
+            raise ValueError(f"The config file at {yaml_file} had unknown keys ({extra_keys}).")
+        return cls(**config_dict)
 
 
 def launch_command_parser(subparsers=None):
@@ -82,6 +115,9 @@ def launch_command(args):
     else:
         raise OSError("You need to provide an aws_access_key_id and aws_secret_access_key when not using aws_profile")
 
+    session = sagemaker.Session()
+    bucket, _ = s3_utils.determine_bucket_and_prefix(bucket=None, key_prefix=None, sagemaker_session=session)
+
     # extract needed arguments
     # TODO: use source_dir but respect the .gitignore
     source_dir = os.path.dirname(args.training_script)
@@ -147,12 +183,17 @@ def launch_command(args):
         "environment": {"ENTRYPOINT": entry_point},
         "metric_definitions": sagemaker_metrics,
         "enable_sagemaker_metrics": True,
+        "tensorboard_output_config": TensorBoardOutputConfig(
+            # TODO: build this path properly
+            s3_output_path=_s3_combine_url(f"s3://{bucket}/tensorboard"),
+            container_local_output_path=SM_TENSORBOARD_OUTPUT_DIRECTORY,
+        ),
     }
 
     if sagemaker_config.additional_args is not None:
         args = merge_dicts(sagemaker_config.additional_args, args)
 
-    print(json.dumps(args))
+    # print(json.dumps(args))
     # huggingface_estimator = HuggingFace(**args)
     huggingface_estimator = PyTorch(**args)
     huggingface_estimator.fit(inputs=sagemaker_inputs)
