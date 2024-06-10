@@ -11,13 +11,6 @@ RUN apt-get update \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
- # For conda ssl verification
-# ENV REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
-# RUN curl -L -o ~/miniforge3.sh https://github.com/conda-forge/miniforge/releases/download/${MINIFORGE3_VERSION}/Miniforge3-${MINIFORGE3_VERSION}-Linux-x86_64.sh \
-#  && chmod +x ~/miniforge3.sh \
-#  && ~/miniforge3.sh -b -p /opt/conda \
-#  && rm ~/miniforge3.sh
-
 #RUN pip install --upgrade pip --no-cache-dir --trusted-host pypi.org --trusted-host files.pythonhosted.org
 
 # Install SM packages

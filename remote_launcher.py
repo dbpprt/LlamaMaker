@@ -13,6 +13,8 @@ def parse_args(parser, training_script):
     # this is quite a hacky way to inject the training script into the arguments, but it works
     old_sys_argv = sys.argv
 
+    print(f"remote_launcher.py called with args: {' '.join(old_sys_argv)}")
+
     assert old_sys_argv[1].startswith(
         "--config_file"
     ), "expected first argument to be --config_file for this launcher to work"
