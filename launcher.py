@@ -128,7 +128,8 @@ def launch_command(args):
     print("Creating Estimator")
     args = {
         "image_uri": sagemaker_config.image_uri,
-        "entry_point": entry_point,
+        # we use our custom launcher here as "middleware" to call accelerate correctly
+        "entry_point": "remote_launcher.py",
         "source_dir": source_dir,
         "role": sagemaker_config.iam_role_name,
         "transformers_version": sagemaker_config.transformers_version,
@@ -140,7 +141,7 @@ def launch_command(args):
         "debugger_hook_config": False,
         # "distribution": distribution,
         "hyperparameters": hyperparameters,
-        # "environment": environment,
+        "environment": {"ENTRYPOINT": entry_point},
         "metric_definitions": sagemaker_metrics,
     }
 

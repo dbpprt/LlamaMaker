@@ -1,6 +1,4 @@
 import os
-import subprocess
-import sys
 
 import torch
 from datasets import load_dataset, set_caching_enabled
@@ -23,7 +21,6 @@ from src.formatting import formatting_func
 from src.utils import instantiate
 from src.utils.env import print_env
 from src.utils.misc import is_ampere_or_newer
-from src.utils.sagemaker import restart_program
 
 
 def main():
@@ -44,31 +41,6 @@ def main():
     # we only use flash attention if its available and we have cuda available
     use_flash_attention = script_args.use_flash_attention_2
     try:
-        if (
-            use_flash_attention
-            and not is_flash_attn_2_available()
-            and torch.cuda.is_available()
-            and is_ampere_or_newer()
-        ):
-            print("FlashAttention is not available, though CUDA is availeble. Let's try installing FlashAttention")
-
-            subprocess.check_call(
-                [sys.executable, "-m", "pip", "install", "accelerate==0.27.2"],
-            )
-
-            env = os.environ.copy()
-            env["MAX_JOBS"] = "4"
-            subprocess.check_call(
-                [sys.executable, "-m", "pip", "install", "git+https://github.com/NVIDIA/TransformerEngine.git@stable"],
-                env=env,
-            )
-
-            print("Restarting with newly installed packages...")
-            restart_program()
-
-            # subprocess.check_call(
-            #     [sys.executable, "-m", "pip", "install", "flash-attn", "--no-build-isolation", "--upgrade"]
-            # )
         if use_flash_attention and not is_flash_attn_2_available():
             print("FlashAttention not available, disabling it.")
             use_flash_attention = False
@@ -245,8 +217,7 @@ def main():
         **trainer_args,
     )
 
-    with torch.cuda.amp.autocast():
-        trainer.train()
+    trainer.train()
 
     if trainer.accelerator.is_main_process:
         trainer.save_model(output_dir)
@@ -264,7 +235,7 @@ def main():
             output_dir,
             device_map="auto",
             offload_folder=os.path.join(output_dir, "offload"),
-            torch_dtype=torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16,
+            torch_dtype=torch.float16,  # torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16,
         )
         # are we merging 4bit to 16bit here?
         model = model.merge_and_unload()

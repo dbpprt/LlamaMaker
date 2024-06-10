@@ -1,14 +1,14 @@
 compute_environment: LOCAL_MACHINE
 deepspeed_config: {}
 distributed_type: "MULTI_GPU"
-downcast_bf16: true
+downcast_bf16: "NO"
 dynamo_backend: "NO"
 fsdp_config: {}
 gpu_ids: all
 machine_rank: 0
 main_training_function: main
 megatron_lm_config: {}
-mixed_precision: bf16
+mixed_precision: "NO"
 num_machines: 1
 num_processes: 4
 rdzv_backend: static
