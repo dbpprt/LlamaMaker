@@ -19,7 +19,12 @@ def parse_args(parser, training_script):
         "--config_file"
     ), "expected first argument to be --config_file for this launcher to work"
 
-    sys.argv = old_sys_argv[0:2] + [training_script] + old_sys_argv[2:]
+    # sometimes the config_file is a single arg, sometimes it is 2 different args, so we need to handle both cases
+    if old_sys_argv[1].endswith(".yaml"):
+        sys.argv = old_sys_argv[0:2] + [training_script] + old_sys_argv[2:]
+    else:
+        sys.argv = old_sys_argv[0:3] + [training_script] + old_sys_argv[3:]
+
     print(f"Launching lunch command with args: {' '.join(sys.argv)}")
 
     try:
@@ -32,13 +37,19 @@ def main():
     # training_script
     parser = launch_command_parser()
     # get training script from env var
-    training_script = os.environ["ENTRYPOINT"]
+    if "ENTRYPOINT" in os.environ:
+        training_script = os.environ["ENTRYPOINT"]
+    else:
+        print("No entrypoint given, falling back to train.py")
+        training_script = "train.py"
 
     assert isinstance(training_script, str), f"{training_script} is not a string!"
     assert os.path.exists(training_script), f"{training_script} does not exist!"
     print(f"Launching training_script {training_script}")
 
     args = parse_args(parser, training_script="train.py")
+
+    print("Launching launch command with args:", args)
     launch_command(args)
 
 

@@ -87,7 +87,7 @@ def main():
         pretrained_model_name_or_path=script_args.model_id,
         device_map=device_map,
         trust_remote_code=True,
-        torch_dtype="auto",
+        # torch_dtype="auto",
         attn_implementation="sdpa" if not use_flash_attention else "flash_attention_2",
         use_cache=not script_args.gradient_checkpointing,
         **model_kwargs,
@@ -217,7 +217,10 @@ def main():
         **trainer_args,
     )
 
+    # some log statements, it seems that there is a deadlock somewhere.
+    print(f"Start training model: {model}")
     trainer.train()
+    print("Training completed.")
 
     if trainer.accelerator.is_main_process:
         trainer.save_model(output_dir)

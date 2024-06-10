@@ -124,6 +124,9 @@ def launch_command(args):
                 sagemaker_metrics.append(metric_dict)
         print(f"Loaded SageMaker Metrics: {sagemaker_metrics}")
 
+    # we need to pass the remote_config_file as config_file for the remote accelerate script to work
+    hyperparameters["config_file"] = args.remote_config_file
+
     # configure session
     print("Creating Estimator")
     args = {
@@ -143,6 +146,7 @@ def launch_command(args):
         "hyperparameters": hyperparameters,
         "environment": {"ENTRYPOINT": entry_point},
         "metric_definitions": sagemaker_metrics,
+        "enable_sagemaker_metrics": True,
     }
 
     if sagemaker_config.additional_args is not None:
