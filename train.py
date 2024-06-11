@@ -20,7 +20,6 @@ from src.callbacks import ModelInfoCallback
 from src.constants import SM_TENSORBOARD_OUTPUT_DIRECTORY
 from src.formatting import formatting_func
 from src.utils import instantiate
-from src.utils.env import print_env
 from src.utils.misc import is_ampere_or_newer
 
 
@@ -44,10 +43,6 @@ def main():
     assert script_args.eval_steps == script_args.save_steps, "eval steps and save steps must be the same."
 
     trainer_args = {}
-
-    # TODO: Not sure if smart to set this to True by default, but it's a good option for debugging
-    if 1 + 1 == 3:
-        print_env()
 
     # we only use flash attention if its available and we have cuda available
     use_flash_attention = script_args.use_flash_attention_2
@@ -98,7 +93,6 @@ def main():
         pretrained_model_name_or_path=script_args.model_id,
         device_map=device_map,
         trust_remote_code=True,
-        # torch_dtype="auto",
         attn_implementation="sdpa" if not use_flash_attention else "flash_attention_2",
         use_cache=not script_args.gradient_checkpointing,
         **model_kwargs,
@@ -115,8 +109,7 @@ def main():
         task_type="CAUSAL_LM",
         lora_alpha=script_args.lora_alpha,
         lora_dropout=script_args.lora_dropout,
-        # TODO: not supported in the version of peft available on SageMaker
-        # use_rslora=script_args.use_rs_lora,
+        use_rslora=script_args.use_rs_lora,
     )
     trainer_args = {**trainer_args, "peft_config": lora_config}
 
@@ -128,29 +121,6 @@ def main():
         add_bos_token=True,
         use_fast=False,
     )
-
-    # TODO: this feels so wrong...
-    # if re.search("tinyllama", script_args.model_id, re.IGNORECASE):
-    #     # tokenizer.eos_token_id = 32002
-    #     tokenizer.pad_token_id = tokenizer.eos_token_id
-    # elif re.search("llama", script_args.model_id, re.IGNORECASE):
-    #     # tokenizer.eos_token_id = tokenizer.pad_token_id
-    #     tokenizer.pad_token_id = tokenizer.eos_token_id
-    # else:
-    #     raise ValueError("Model not supported")
-
-    # model.config.pad_token_id = tokenizer.pad_token_id
-
-    # if re.match("[^/]+/llama", base_model_name):
-    #     model.config.pad_token_id = tokenizer.pad_token_id = 0
-    #     model.config.bos_token_id = tokenizer.bos_token_id = 1
-    #     model.config.eos_token_id = tokenizer.eos_token_id = 2
-
-    # if re.match("[^/]+/llama", base_model_name):
-    #     model.config.pad_token_id = get_tokenizer(
-    #         base_model_name).pad_token_id = 0
-    #     model.config.bos_token_id = 1
-    #     model.config.eos_token_id = 2
 
     model.config.pad_token_id = tokenizer.pad_token_id = 0
     model.config.bos_token_id = tokenizer.bos_token_id = 1
@@ -185,8 +155,6 @@ def main():
         per_device_train_batch_size=script_args.per_device_train_batch_size,
         per_device_eval_batch_size=script_args.per_device_eval_batch_size,
         gradient_accumulation_steps=script_args.gradient_accumulation_steps,
-        # TODO: should this be enabled by default?
-        # auto_find_batch_size=True,
         optim=script_args.optim,
         logging_steps=script_args.logging_steps,
         learning_rate=script_args.learning_rate,
@@ -208,8 +176,6 @@ def main():
         eval_strategy="steps",
         metric_for_best_model="eval_loss",
         ddp_find_unused_parameters=False,
-        # TODO: Slows down training
-        # skip_memory_metrics=False,
     )
 
     trainer = SFTTrainer(
@@ -243,7 +209,6 @@ def main():
     #     trainer.accelerator.state.fsdp_plugin.set_state_dict_type("FULL_STATE_DICT")
     # trainer.save_model()
 
-    # some log statements, it seems that there is a deadlock somewhere.
     print(f"Start training model: {model}")
     trainer.train()
     print("Training completed.")

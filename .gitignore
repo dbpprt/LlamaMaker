@@ -165,7 +165,7 @@ data/*
 !data/.gitkeep
 !data/examples/
 !data/mintaka/
-!data/swisstext2023/
+data/swisstext2023/
 
 .checkpoints/*
 !.checkpoints/.gitkeep
