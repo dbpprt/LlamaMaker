@@ -226,6 +226,17 @@ def main():
         **trainer_args,
     )
 
+    # TODO: Checkpointing
+    # checkpoint = None
+    # if training_args.resume_from_checkpoint is not None:
+    #     checkpoint = training_args.resume_from_checkpoint
+    # trainer.train(resume_from_checkpoint=checkpoint)
+
+    # # saving final model
+    # if trainer.is_fsdp_enabled:
+    #     trainer.accelerator.state.fsdp_plugin.set_state_dict_type("FULL_STATE_DICT")
+    # trainer.save_model()
+
     # some log statements, it seems that there is a deadlock somewhere.
     print(f"Start training model: {model}")
     trainer.train()
