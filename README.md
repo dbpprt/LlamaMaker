@@ -32,17 +32,53 @@ This solution provides you an easy to use abstraction layer to fine-tune custom 
 ## 🌟 Features
 - 🎯 Custom container support with integrated deployment and build pipeline.
 - 🎯 BYOD - Bring your own datasets, models or both *without writing any code*.
-- 🎯 Local first: LlamaMaker is designed to run locally on Apple Silicon, providing a first class experience for developers.
+- 🎯 Local first: LlamaMaker is designed to run locally on Apple Silicon, providing a first class experience for developers. (MPS backend)
 - 🎯 Support for **fp32**, **fp16**, **fp8**, **QLoRa**, **LoRa** and more.
 - 🎯 Tensorboard integration to monitor training progress..
-- 🎯 
-- 🎯
-- 🎯
-- 🎯
+- 🎯 [smdistributed](https://docs.aws.amazon.com/sagemaker/latest/dg/data-parallel-modify-sdp-pt.html) on **p4d.***
+- 🎯 **Single-node multi-GPU** fully supported
+- 🎯 Extensive validation metrics for JSON generation (schema validation, field based accuracy, and more)
+- 🎯 *coming soon*: **Multi-node multi-gpu**
+- 🎯 *coming soon*: **FSDP**, **DeepSpeed**
 
 ## 🏃‍♀️Getting Started
 
+### Setup your development environment
 
+```bash
+# make sure to have a local conda environment, otherwise
+# TODO: pathes are likely not working, due to folder restructuring
+chmod +x scripts/development-environment/environment.sh
+sh scripts/development-environment/environment.sh
+```
+
+```bash
+conda env create -f scripts/development-environment/environment.yaml
+conda activate llamamaker
+```
+
+### Fine-tune locally using [TinyLlama/TinyLlama-1.1B-intermediate-step-1431k-3T](https://huggingface.co/TinyLlama/TinyLlama-1.1B-intermediate-step-1431k-3T) with the [MPS backend](https://pytorch.org/docs/stable/notes/mps.html)
+```bash
+# note: this only works on Apple Silicon and is intended for debugging purposes!
+accelerate launch --config_file=./config/local.yaml \
+                    train.py \
+                    --model_id TinyLlama/TinyLlama-1.1B-intermediate-step-1431k-3T \
+                    --data_config ./data/swisstext2023/llama3.yaml \
+                    --debug \
+                    --per_device_train_batch_size 1 \
+                    --per_device_eval_batch_size 1 \
+                    --gradient_accumulation_steps 1 \
+                    --max_seq_length 256 \
+                    --logging_steps 1 \
+                    --eval_steps 5 \
+                    --save_steps 50 \
+                    --num_train_epochs 1 \
+                    --optim "adamw_hf" \
+                    --lora_modules_to_save "embed_tokens" \
+                    --lora_r 64 \
+                    --lora_alpha 16 \
+                    --lora_dropout 0.1
+```
 
 
 ## 🗂️ Documentation

@@ -13,14 +13,10 @@ dependencies:
   - pip
 
   - pytorch 
-  # - torchvision 
-  # - torchaudio 
-  # - pytorch-cuda=12.1
-  # - xformers
-
+  
   - pip:
     - -r requirements.dev.txt
-    - -r requirements.txt
+    - -r ../../requirements.txt
 
 # Non-standard section listing target platforms for conda-lock:
 # platforms:

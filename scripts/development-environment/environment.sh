@@ -29,6 +29,3 @@ fi
 conda activate llamamaker
 
 pip install flash-attn --no-build-isolation
-
-#conda install xformers -c xformers
-#pip install "unsloth[conda] @ git+https://github.com/unslothai/unsloth.git"
