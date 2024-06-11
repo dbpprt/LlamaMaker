@@ -11,7 +11,7 @@ megatron_lm_config: {}
 mixed_precision: "NO"
 num_machines: 1
 # will be auto discovered depending on the instance type
-# num_processes: 4
+num_processes: 1
 rdzv_backend: static
 same_network: true
 use_cpu: false

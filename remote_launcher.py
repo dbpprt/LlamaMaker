@@ -25,9 +25,9 @@ def parse_args(parser, training_script):
     else:
         sys.argv = old_sys_argv[0:3] + [training_script] + old_sys_argv[3:]
 
-    if "NUM_GPUS" in os.environ and int(os.environ["NUM_GPUS"]) > 0:
-        print(f"Setting --num-gpus to {os.environ["NUM_GPUS"]}")
-        sys.argv[1:1] = ["--num-gpus", os.environ["NUM_GPUS"]]
+    if "NUM_PROCESSES" in os.environ and int(os.environ["NUM_PROCESSES"]) > 0:
+        print("Setting --num_processes to " + os.environ["NUM_PROCESSES"])
+        sys.argv[1:1] = ["--num_processes", os.environ["NUM_PROCESSES"]]
 
     print(f"Launching lunch command with args: {' '.join(sys.argv)}")
 

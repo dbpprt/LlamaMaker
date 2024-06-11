@@ -234,7 +234,7 @@ def launch_command(args):
         "instance_type": args.ec2_instance_type,
         "debugger_hook_config": False,
         "hyperparameters": hyperparameters,
-        "environment": {"ENTRYPOINT": entry_point, "NUM_GPUS": num_gpus},
+        "environment": {"ENTRYPOINT": entry_point, "NUM_PROCESSES": str(num_gpus)},
         "metric_definitions": sagemaker_metrics,
         "enable_sagemaker_metrics": True,
         "tensorboard_output_config": TensorBoardOutputConfig(
