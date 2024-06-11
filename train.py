@@ -3,7 +3,7 @@ import os
 import torch
 from datasets import load_dataset, set_caching_enabled
 from omegaconf import OmegaConf
-from peft import AutoPeftModelForCausalLM, LoraConfig, prepare_model_for_kbit_training
+from peft import LoraConfig, prepare_model_for_kbit_training
 from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
@@ -40,6 +40,8 @@ def main():
         # TODO: This should be a constant ideally
         logging_dir = SM_TENSORBOARD_OUTPUT_DIRECTORY
         print(f"Setting log directory to {logging_dir}")
+
+    assert script_args.eval_steps == script_args.save_steps, "eval steps and save steps must be the same."
 
     trainer_args = {}
 
@@ -165,8 +167,8 @@ def main():
     eval_dataset = dataset["eval"]
 
     if script_args.debug:
-        print("Debug mode, subsampling dataset to 10 samples.")
-        num_samples_to_select = 10
+        print("Debug mode, subsampling dataset to 25 samples.")
+        num_samples_to_select = 25
 
         train_dataset = train_dataset.select(range(num_samples_to_select))
         eval_dataset = eval_dataset.select(range(num_samples_to_select))
@@ -186,7 +188,6 @@ def main():
         # TODO: should this be enabled by default?
         # auto_find_batch_size=True,
         optim=script_args.optim,
-        save_steps=script_args.save_steps,
         logging_steps=script_args.logging_steps,
         learning_rate=script_args.learning_rate,
         weight_decay=script_args.weight_decay,
@@ -199,8 +200,13 @@ def main():
         bf16=torch.cuda.is_available() and torch.cuda.is_bf16_supported(),
         gradient_checkpointing_kwargs={"use_reentrant": False} if script_args.gradient_checkpointing else None,
         neftune_noise_alpha=script_args.neftune_noise_alpha,
+        # TODO: this does not work with multiple GPUs
         load_best_model_at_end=True,
         save_total_limit=script_args.save_limit,
+        save_steps=script_args.save_steps,
+        save_strategy="steps",
+        eval_strategy="steps",
+        metric_for_best_model="eval_loss",
         ddp_find_unused_parameters=False,
         # TODO: Slows down training
         # skip_memory_metrics=False,
@@ -244,25 +250,27 @@ def main():
 
     if trainer.accelerator.is_main_process:
         trainer.save_model(output_dir)
-        final_checkpoint_dir = os.path.join(output_dir, "final_checkpoint")
-        final_merged_dir = os.path.join(output_dir)  # , "final_merged_checkpoint")
 
-        trainer.model.save_pretrained(final_checkpoint_dir)
+        # lets do not merge the model for now, this can be done afterwards.
+        # final_checkpoint_dir = os.path.join(output_dir, "final_checkpoint")
+        # final_merged_dir = os.path.join(output_dir)  # , "final_merged_checkpoint")
 
-        # free memory for merging weights
-        del model
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
+        # trainer.model.save_pretrained(final_checkpoint_dir)
 
-        model = AutoPeftModelForCausalLM.from_pretrained(
-            output_dir,
-            device_map="auto",
-            offload_folder=os.path.join(output_dir, "offload"),
-            torch_dtype=torch.float16,  # torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16,
-        )
-        # are we merging 4bit to 16bit here?
-        model = model.merge_and_unload()
-        model.save_pretrained(final_merged_dir, safe_serialization=True)
+        # # free memory for merging weights
+        # del model
+        # if torch.cuda.is_available():
+        #     torch.cuda.empty_cache()
+
+        # model = AutoPeftModelForCausalLM.from_pretrained(
+        #     output_dir,
+        #     device_map="auto",
+        #     offload_folder=os.path.join(output_dir, "offload"),
+        #     torch_dtype=torch.float16,  # torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16,
+        # )
+        # # are we merging 4bit to 16bit here?
+        # model = model.merge_and_unload()
+        # model.save_pretrained(final_merged_dir, safe_serialization=True)
 
 
 if __name__ == "__main__":

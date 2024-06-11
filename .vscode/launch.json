@@ -335,7 +335,8 @@
                 // this one is not gated
                 "TinyLlama/TinyLlama-1.1B-intermediate-step-1431k-3T",
                 "--data_config",
-                "./data/swisstext2023/llama3.yaml",
+                // "./data/swisstext2023/llama3.yaml",
+                "./data/mintaka/llama3.yaml",
                 // use debug mode locally
                 "--debug",
                 "--per_device_train_batch_size",
@@ -351,7 +352,7 @@
                 "--eval_steps",
                 "5",
                 "--save_steps",
-                "50",
+                "5",
                 "--num_train_epochs",
                 "1",
                 "--optim",
@@ -502,7 +503,7 @@
             ]
         },
         {
-            "name": "launcher.py",
+            "name": "launcher.py mintaka",
             "type": "python",
             "request": "launch",
             "cwd": "${workspaceFolder}",
@@ -518,13 +519,13 @@
                 "--data_config",
                 "./data/swisstext2023/llama3.yaml",
                 "--per_device_train_batch_size",
-                "1",
+                "8",
                 "--per_device_eval_batch_size",
-                "1",
+                "8",
                 "--gradient_accumulation_steps",
-                "16",
+                "1",
                 "--max_seq_length",
-                "2048",
+                "128",
                 "--logging_steps",
                 "10",
                 "--eval_steps",
@@ -547,6 +548,145 @@
                 // "--lora_modules_to_save",
                 // "embed_tokens",
             ]
-        }
+        },
+        // {
+        //     "name": "launcher.py",
+        //     "type": "python",
+        //     "request": "launch",
+        //     "cwd": "${workspaceFolder}",
+        //     "program": "${workspaceFolder}/launcher.py",
+        //     "args": [
+        //         "launch",
+        //         "--config_file=./config/sagemaker.yaml",
+        //         "--remote_config_file=./config/distributed_local.yaml",
+        //         "train.py",
+        //         "--model_id",
+        //         // this one is not gated
+        //         "NousResearch/Meta-Llama-3-8B",
+        //         "--data_config",
+        //         "./data/swisstext2023/llama3.yaml",
+        //         "--per_device_train_batch_size",
+        //         "1",
+        //         "--per_device_eval_batch_size",
+        //         "1",
+        //         "--gradient_accumulation_steps",
+        //         "16",
+        //         "--max_seq_length",
+        //         "2048",
+        //         "--logging_steps",
+        //         "10",
+        //         "--eval_steps",
+        //         "100",
+        //         "--save_steps",
+        //         "100",
+        //         "--num_train_epochs",
+        //         "1",
+        //         // The values used in the QLoRA paper were r=64 and lora_alpha=16, and these are said to generalize well
+        //         "--lora_r",
+        //         "64",
+        //         "--lora_alpha",
+        //         "16",
+        //         "--lora_dropout",
+        //         "0.1",
+        //         // all-linear is not supported in the current peft version on sagemaker
+        //         "--lora_target_modules",
+        //         "q_proj,k_proj,v_proj,o_proj,gate_proj,down_proj,up_proj,lm_head",
+        //         // uncomment to fine-tune embeddings
+        //         // "--lora_modules_to_save",
+        //         // "embed_tokens",
+        //     ]
+        // }
+        {
+            "name": "SageMaker g5.12xl - mintaka",
+            "type": "python",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "program": "${workspaceFolder}/launcher.py",
+            "args": [
+                "launch",
+                "--remote_config_file=./config/distributed_local.yaml",
+                "--base_job_name=llamamaker-mintaka",
+                // "--s3_bucket=",
+                "--s3_bucket_prefix=mintaka",
+                "--ec2_instance_type=ml.g5.12xlarge",
+                "--iam_role_name=AmazonSageMaker-ExecutionRole",
+                "--profile=default",
+                "--num_machines=1",
+                "--region=us-east-1",
+                "--image_uri=271150355607.dkr.ecr.us-east-1.amazonaws.com/dbpprt_llamamaker:latest",
+                "--sagemaker_metrics_file=config/sagemaker_metrics_definition.tsv",
+                // "--sagemaker_inputs_file=config/sagemaker_inputs_definition.tsv",
+                "train.py",
+                "--model_id",
+                "NousResearch/Meta-Llama-3-8B",
+                "--data_config",
+                "./data/mintaka/llama3.yaml",
+                "--per_device_train_batch_size",
+                "8",
+                "--per_device_eval_batch_size",
+                "8",
+                "--gradient_accumulation_steps",
+                "1",
+                "--max_seq_length",
+                "128",
+                "--logging_steps",
+                "10",
+                "--eval_steps",
+                "100",
+                "--save_steps",
+                "100",
+                "--num_train_epochs",
+                "1",
+                "--lora_r",
+                "64",
+                "--lora_alpha",
+                "16",
+                "--lora_dropout",
+                "0.1",
+                // all-linear is not supported in the current peft version on sagemaker
+                "--lora_target_modules",
+                "q_proj,k_proj,v_proj,o_proj,gate_proj,down_proj,up_proj,lm_head",
+                // uncomment to fine-tune embeddings
+                // "--lora_modules_to_save",
+                // "embed_tokens",
+            ]
+        },
     ]
 }
+
+/*
+parser.add_argument("--base_job_name", default="llamamaker-", help="The base job name to use for the launching")
+    parser.add_argument(
+        "--s3_bucket",
+        default=None,
+        help="The S3 bucket to use as the base for the code and tensorboard outputs. Uses SageMaker default bucket if not provided.",
+    )
+    parser.add_argument(
+        "--s3_bucket_prefix",
+        default="",
+        help="The S3 bucket prefix to use as the base for the code and tensorboard outputs.",
+    )
+    parser.add_argument(
+        "--ec2_instance_type", default=None, help="The EC2 instance type to use for the launching", required=True
+    )
+    parser.add_argument(
+        "--iam_role_name", default=None, help="The IAM role name to use for the launching", required=True
+    )
+    parser.add_argument(
+        "--profile", default=None, help="The AWS profile name to use for the launching", required=False
+    )
+    parser.add_argument("--aws_access_key_id", default=None, help="The AWS access key ID to use for the launching")
+    parser.add_argument(
+        "--aws_secret_access_key", default=None, help="The AWS secret access key to use for the launching"
+    )
+    parser.add_argument("--num_machines", default=1, help="The number of machines to use for the launching")
+    parser.add_argument("--region", default=None, help="The AWS region to use for the launching", required=True)
+    parser.add_argument(
+        "--image_uri", default=None, help="The image URI (ECR) to use as training container", required=True
+    )
+    parser.add_argument(
+        "--sagemaker_metrics_file",
+        default=None,
+        help="The SageMaker metrics file to extract metrics from the training job",
+    )
+    */

@@ -28,4 +28,5 @@ fi
 
 conda activate llamamaker
 
-pip install flash-attn --no-build-isolation
+# uncomment if you have cuda locally
+# pip install flash-attn --no-build-isolation

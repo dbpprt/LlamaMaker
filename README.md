@@ -38,6 +38,8 @@ This solution provides you an easy to use abstraction layer to fine-tune custom 
 - 🎯 [smdistributed](https://docs.aws.amazon.com/sagemaker/latest/dg/data-parallel-modify-sdp-pt.html) on **p4d.***
 - 🎯 **Single-node multi-GPU** fully supported
 - 🎯 Extensive validation metrics for JSON generation (schema validation, field based accuracy, and more)
+- 🎯 Uploading your code to S3 while respecting the local .gitignore.
+- 🎯 *coming soon*: Support for [Automatic Model Tuning](https://docs.aws.amazon.com/sagemaker/latest/dg/automatic-model-tuning.html)
 - 🎯 *coming soon*: **Multi-node multi-gpu**
 - 🎯 *coming soon*: **FSDP**, **DeepSpeed**
 
@@ -80,6 +82,14 @@ accelerate launch --config_file=./config/local.yaml \
                     --lora_dropout 0.1
 ```
 
+### Fine-tune [Llama3]() on [Mintaka]() using single-node multi-GPU training on [Amazon SageMaker]() using a **ml.g5.12xlarge** instance.
+```bash
+python launcher.py launch 
+                --ec2_instance_type=ml.g5.12xlarge \
+                --remote_config_file=./config/distributed_local.yaml \
+                train.py \
+
+```
 
 ## 🗂️ Documentation
 
